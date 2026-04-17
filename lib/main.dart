@@ -1,5 +1,7 @@
+import 'package:app_lojajj/tela_produtos.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() async {
   await Supabase.initialize(
@@ -34,8 +36,22 @@ class MyApp extends StatelessWidget {
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
         colorScheme: .fromSeed(seedColor: Colors.deepPurple),
+        textTheme: TextTheme(
+          displayLarge: const TextStyle(
+            fontSize: 50,
+            fontWeight: FontWeight.bold,
+            color: Colors.deepPurple,
+          ),
+          titleLarge: GoogleFonts.oswald(
+            fontSize: 50,
+            fontStyle: FontStyle.italic,
+            color: Colors.deepPurple,
+          ),
+          bodyMedium: GoogleFonts.merriweather(),
+          displaySmall: GoogleFonts.pacifico(),
+        ),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const TelaProdutos(),
     );
   }
 }
