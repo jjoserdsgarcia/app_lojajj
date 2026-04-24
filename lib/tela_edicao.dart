@@ -12,13 +12,21 @@ class TelaEdicao extends StatefulWidget {
 
 class _TelaEdicaoState extends State<TelaEdicao> {
   late TextEditingController descricaoProdutoController;
+  late TextEditingController nomeProdutoController;
+  late TextEditingController precoProdutoController;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    print(widget.produto.DescricaoProduto);
+    print(widget.produto.descricaoProduto);
     descricaoProdutoController = TextEditingController(
-      text: widget.produto.DescricaoProduto,
+      text: widget.produto.descricaoProduto,
+    );
+    nomeProdutoController = TextEditingController(
+      text: widget.produto.nomeProduto,
+    );
+    precoProdutoController = TextEditingController(
+      text: widget.produto.precoProduto.toString(),
     );
   }
 
@@ -44,7 +52,7 @@ class _TelaEdicaoState extends State<TelaEdicao> {
                   ),
                 ),
                 TextFormField(
-                  initialValue: widget.produto.NomeProduto,
+                  controller: nomeProdutoController,
                   decoration: InputDecoration(
                     labelText: "Nome do Produto",
                     border: OutlineInputBorder(),
@@ -52,7 +60,7 @@ class _TelaEdicaoState extends State<TelaEdicao> {
                 ),
 
                 TextFormField(
-                  initialValue: widget.produto.PrecoProduto.toString(),
+                  controller: precoProdutoController,
                   decoration: InputDecoration(
                     labelText: "Preço do Produto",
                     border: OutlineInputBorder(),
@@ -69,20 +77,47 @@ class _TelaEdicaoState extends State<TelaEdicao> {
         children: [
           FloatingActionButton(
             heroTag: "btnSalvar",
-            onPressed: () {
+            onPressed: () async {
               final supabase = Supabase.instance.client;
-              supabase
+              await supabase
                   .from("produtos")
-                  .update({"DescricaoProduto": descricaoProdutoController.text})
+                  .update({
+                    "DescricaoProduto": descricaoProdutoController.text,
+                    "NomeProduto": nomeProdutoController.text,
+                    "PrecoProduto": double.parse(precoProdutoController.text),
+                  })
                   .eq("id", widget.produto.id!);
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("Produto atualizado com sucesso!")),
+                );
+                Navigator.pop(context);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("Erro ao atualizar o produto!")),
+                );
+              }
             },
             child: Icon(Icons.save),
           ),
           FloatingActionButton(
             heroTag: "btnExcluir",
-            onPressed: () {
+            onPressed: () async {
               final supabase = Supabase.instance.client;
-              supabase.from("produtos").delete().eq("id", widget.produto.id!);
+              await supabase
+                  .from("produtos")
+                  .delete()
+                  .eq("id", widget.produto.id!);
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("Produto excluído com sucesso!")),
+                );
+                Navigator.pop(context);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("Erro ao excluir o produto!")),
+                );
+              }
             },
             child: Icon(Icons.delete),
           ),
