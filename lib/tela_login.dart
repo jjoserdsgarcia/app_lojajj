@@ -16,7 +16,7 @@ class _TelaLoginState extends State<TelaLogin> {
   var formKey = GlobalKey<FormState>();
   var passwordController = TextEditingController();
   var nameController = TextEditingController();
-
+  var isLoading = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -73,6 +73,9 @@ class _TelaLoginState extends State<TelaLogin> {
                 ),
                 ElevatedButton(
                   onPressed: () async {
+                    setState(() {
+                      isLoading = true;
+                    });
                     if (formKey.currentState!.validate()) {
                       final supabase = Supabase.instance.client;
                       final usuarios = await supabase
@@ -90,6 +93,9 @@ class _TelaLoginState extends State<TelaLogin> {
                             backgroundColor: Colors.red,
                           ),
                         );
+                        setState(() {
+                          isLoading = false;
+                        });
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
@@ -97,6 +103,9 @@ class _TelaLoginState extends State<TelaLogin> {
                             backgroundColor: Colors.green,
                           ),
                         );
+                        setState(() {
+                          isLoading = false;
+                        });
                         if (usuarios.first["tipousuario"] == "Funcionário") {
                           Navigator.of(context).pushReplacement(
                             MaterialPageRoute(
@@ -117,7 +126,9 @@ class _TelaLoginState extends State<TelaLogin> {
                       }
                     }
                   },
-                  child: Text("Entrar"),
+                  child: isLoading
+                      ? CircularProgressIndicator(color: Colors.blueGrey)
+                      : Text("Entrar"),
                 ),
                 TextButton(
                   onPressed: () {
